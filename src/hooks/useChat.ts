@@ -1,9 +1,9 @@
 import { useState, useCallback } from "react";
-import type { Candidate, Message } from "../types";
+import type { Candidate, Message, JobDescription } from "../types";
 import { getChatResponse } from "../services/api";
 import { saveToStorage } from "../services/storage";
 
-export function useChat() {
+export function useChat(jobDescription: JobDescription) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,10 +42,10 @@ export function useChat() {
           updatedCandidates.find((c) => c.id === candidate.id) || null,
         );
 
-        const aiResponse = await getChatResponse([
-          ...candidate.conversations,
-          newMessage,
-        ]);
+        const aiResponse = await getChatResponse(
+          [...candidate.conversations, newMessage],
+          jobDescription,
+        );
 
         const aiMessage: Message = {
           id: (Date.now() + 1).toString(),
@@ -58,7 +58,7 @@ export function useChat() {
           c.id === candidate.id
             ? {
                 ...c,
-                conversations: [...c.conversations, aiMessage],
+                conversations: [...c.conversations, newMessage, aiMessage],
               }
             : c,
         );
@@ -77,7 +77,7 @@ export function useChat() {
         setIsLoading(false);
       }
     },
-    [],
+    [jobDescription],
   );
 
   const clearChat = useCallback(

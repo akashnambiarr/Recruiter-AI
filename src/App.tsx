@@ -65,7 +65,8 @@ function App() {
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(
     null,
   );
-  const { sendMessage, clearChat, isLoading, error } = useChat();
+  const { sendMessage, clearChat, isLoading, error } =
+    useChat(mockJobDescription); // Updated this line
 
   useEffect(() => {
     const savedCandidates = loadFromStorage();
